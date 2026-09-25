@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#050912">
+  <meta name="description" content="NEXUS OSINT — professional open-source intelligence workspace.">
+  <title>NEXUS // OSINT — Intelligence Workspace</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="authGate" class="auth-gate">
+    <div class="auth-card">
+      <div class="brand"><div class="brand-mark">NX</div><div><strong>NEXUS<span>//</span>OSINT</strong><small>SECURE ACCESS</small></div></div>
+      <div class="auth-tabs"><button class="auth-tab active" data-auth="login">LOGIN</button><button class="auth-tab" data-auth="register">CREATE ACCOUNT</button></div>
+      <form id="authForm">
+        <label class="input-label">EMAIL</label><input id="authEmail" class="auth-input" type="email" required placeholder="analyst@example.com">
+        <label class="input-label" id="nameLabel" style="display:none">DISPLAY NAME</label><input id="authName" class="auth-input" style="display:none" placeholder="Analyst">
+        <label class="input-label">PASSWORD</label><input id="authPassword" class="auth-input" type="password" required minlength="12" placeholder="Minimum 12 characters">
+        <button class="primary-btn auth-submit" type="submit">ACCESS WORKSPACE</button>
+        <p id="authMessage" class="auth-message"></p>
+      </form>
+      <small class="auth-note">Your credentials are sent only to the NEXUS authentication endpoint. Production deployment should use HTTPS and a managed secrets/database environment.</small>
+    </div>
+  </div>
+  <div id="onboardingModal" class="modal-backdrop">
+    <div class="auth-card onboarding-card">
+      <div class="eyebrow">FIRST-TIME SETUP</div>
+      <h2>Configure your NEXUS workspace</h2>
+      <p>Use NEXUS for lawful public-source research. Do not use the platform to access private accounts, stolen credentials, or restricted data.</p>
+      <label class="input-label">DISPLAY NAME</label>
+      <input id="onboardingName" class="auth-input" maxlength="80" placeholder="Analyst">
+      <label class="policy-check"><input id="onboardingPolicy" type="checkbox"> <span>I understand and will use NEXUS only for lawful public-source research.</span></label>
+      <button class="primary-btn" id="onboardingContinue">CONTINUE</button>
+      <p id="onboardingMessage" class="auth-message"></p>
+    </div>
+  </div>
+
+  <div class="scanlines"></div>
+  <div class="ambient ambient-a"></div>
+  <div class="ambient ambient-b"></div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-mark">NX</div>
+      <div>
+        <strong>NEXUS<span>//</span>OSINT</strong>
+        <small>INTELLIGENCE WORKSPACE</small>
+      </div>
+    </div>
+
+    <nav>
+      <p class="nav-label">WORKSPACE</p>
+      <button class="nav-item active" data-view="overview"><span>⌂</span> Overview</button>
+      <button class="nav-item" data-view="investigate"><span>⌕</span> Investigate</button>
+      <button class="nav-item" data-view="modules"><span>◈</span> Intelligence Modules</button>
+      <button class="nav-item" data-view="history"><span>◷</span> Investigation History</button>
+      <button class="nav-item" data-view="cases"><span>▣</span> Cases</button>
+
+      <p class="nav-label">TOOLS</p>
+      <button class="nav-item" data-view="reports"><span>▤</span> Reports</button>
+      <button class="nav-item" data-view="workspace"><span>⌂</span> Workspace</button>
+      <button class="nav-item" data-view="settings"><span>⚙</span> Settings</button>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="status-line"><i></i> SYSTEM OPERATIONAL</div>
+      <div class="user-card">
+        <div class="avatar">E</div>
+        <div><strong>Operator</strong><small>Standard Workspace</small></div>
+        <span class="credits">⚡ <b id="creditCount">25</b></span>
+      </div>
+    </div>
+  </aside>
+
+  
+
+
+
+<section class="panel v9-ops">
+  <div class="panel-head"><div><span class="eyebrow">V9 PROVIDER CONTROL</span><h2>HEALTH & EVIDENCE QUALITY</h2></div><button class="ghost-btn" id="v9Health">CHECK PROVIDERS</button></div>
+  <div id="v9Providers" class="provider-grid"><div class="timeline-empty">Provider status not checked.</div></div>
+  <div class="v9-normalize">
+    <input id="v9CaseId" class="auth-input" placeholder="Case ID for normalization">
+    <button class="primary-btn" id="v9Normalize">NORMALIZE EVIDENCE</button>
+    <span id="v9NormalizeMsg" class="auth-message"></span>
+  </div>
+</section>
+
+<section class="panel v8-evidence" id="evidence-workbench">
+  <div class="panel-head"><div><span class="eyebrow">V8 EVIDENCE WORKBENCH</span><h2>PROVENANCE & ANALYST REVIEW</h2></div></div>
+  <div class="v8-layout">
+    <div>
+      <label class="input-label">CASE ID</label>
+      <input id="v8CaseId" class="auth-input" placeholder="Paste case ID">
+      <button class="ghost-btn" id="v8LoadGraph">LOAD EVIDENCE GRAPH</button>
+      <div id="v8Graph" class="evidence-list"><div class="timeline-empty">Select a case to inspect findings.</div></div>
+    </div>
+    <div>
+      <h3>FINDING REVIEW</h3>
+      <label class="input-label">FINDING ID</label>
+      <input id="v8FindingId" class="auth-input" placeholder="Finding ID">
+      <label class="input-label">CONFIDENCE: <span id="v8ConfidenceValue">70</span>%</label>
+      <input id="v8Confidence" type="range" min="0" max="100" value="70" style="width:100%">
+      <textarea id="v8Note" class="auth-input" rows="6" placeholder="Analyst note / reasoning / verification status"></textarea>
+      <button class="primary-btn" id="v8SaveFinding">SAVE FINDING REVIEW</button>
+      <p id="v8Message" class="auth-message"></p>
+    </div>
+  </div>
+</section>
+<section class="panel v8-collab">
+  <div class="panel-head"><div><span class="eyebrow">CASE COLLABORATION</span><h2>TEAM ACCESS</h2></div></div>
+  <div class="v8-collab-row">
+    <input id="v8MemberCase" class="auth-input" placeholder="Case ID">
+    <input id="v8MemberEmail" class="auth-input" type="email" placeholder="Analyst email">
+    <select id="v8MemberRole" class="auth-input"><option value="viewer">Viewer</option><option value="analyst">Analyst</option></select>
+    <button class="primary-btn" id="v8AddMember">ADD MEMBER</button>
+  </div>
+  <p id="v8CollabMessage" class="auth-message"></p>
+</section>
+
+<section class="panel v7-dashboard" id="operations-dashboard">
+  <div class="panel-head">
+    <div><span class="eyebrow">V7 OPERATIONS CENTER</span><h2>CASE & EVIDENCE OVERVIEW</h2></div>
+    <button class="ghost-btn" id="v7Refresh">REFRESH</button>
+  </div>
+  <div class="v7-metrics">
+    <div class="v7-card"><span>CASES</span><strong id="v7Cases">—</strong></div>
+    <div class="v7-card"><span>INVESTIGATIONS</span><strong id="v7Investigations">—</strong></div>
+    <div class="v7-card"><span>FINDINGS</span><strong id="v7Findings">—</strong></div>
+    <div class="v7-card"><span>CREDITS</span><strong id="v7Credits">—</strong></div>
+  </div>
+  <div class="v7-columns">
+    <div><h3>RECENT ACTIVITY</h3><div id="v7Timeline" class="timeline"><div class="timeline-empty">No activity yet.</div></div></div>
+    <div><h3>CASE STATUS</h3><div class="case-actions">
+      <input id="v7CaseTitle" class="auth-input" placeholder="New case title">
+      <input id="v7CaseTarget" class="auth-input" placeholder="Optional target">
+      <textarea id="v7CaseNotes" class="auth-input" rows="3" placeholder="Analyst notes"></textarea>
+      <button class="primary-btn" id="v7CreateCase">CREATE CASE</button>
+      <p id="v7CaseMessage" class="auth-message"></p>
+    </div></div>
+  </div>
+</section>
+
+<section class="panel v6-console" id="intelligence-engine">
+  <div class="panel-head"><div><span class="eyebrow">V6 INTELLIGENCE ENGINE</span><h2>PUBLIC-SOURCE INVESTIGATION</h2></div><span class="status-dot">SERVER PERSISTED</span></div>
+  <div class="v6-grid">
+    <div>
+      <label class="input-label">TARGET TYPE</label>
+      <select id="v6Type" class="auth-input"><option value="domain">Domain</option><option value="ip">IP Address</option><option value="url">URL</option><option value="username">Username</option></select>
+    </div>
+    <div>
+      <label class="input-label">TARGET</label>
+      <input id="v6Target" class="auth-input" placeholder="example.com">
+    </div>
+  </div>
+  <button class="primary-btn" id="v6Run">RUN INVESTIGATION — 1 CREDIT</button>
+  <pre id="v6Output" class="v6-output">Awaiting target…</pre>
+</section>
+<main class="app">
+    <header class="topbar">
+      <button class="menu-btn" id="menuBtn">☰</button>
+      <div class="crumb"><span>SECURE WORKSPACE</span><b>/</b><strong id="viewTitle">OVERVIEW</strong></div>
+      <div class="top-actions">
+        <div class="system-pill"><i></i> LIVE</div>
+        <button class="icon-btn" title="Notifications">◉<em></em></button>
+        <button class="profile-btn"><span class="avatar small">E</span><span>Operator</span>⌄</button>
+      </div>
+    </header>
+
+    <section class="content">
+      <div id="overview" class="view active">
+        <div class="hero">
+          <div>
+            <div class="eyebrow">◈ OPEN-SOURCE INTELLIGENCE PLATFORM</div>
+            <h1>Investigate with <span>clarity.</span></h1>
+            <p>One professional workspace for lawful OSINT research, digital reconnaissance, verification and security analysis.</p>
+            <div class="hero-actions">
+              <button class="primary-btn" data-go="investigate">⌕ Start Investigation</button>
+              <button class="ghost-btn" data-go="modules">Explore Modules →</button>
+            </div>
+          </div>
+          <div class="hero-orbit">
+            <div class="orbit orbit-1"></div><div class="orbit orbit-2"></div>
+            <div class="core">NX<div>OSINT</div></div>
+          </div>
+        </div>
+
+        <div class="metrics">
+          <div class="metric"><span>INVESTIGATIONS</span><strong id="investigationCount">0</strong><small>Server-persisted</small></div>
+          <div class="metric"><span>MODULES READY</span><strong>5</strong><small>Operational collectors</small></div>
+          <div class="metric"><span>QUOTA</span><strong><b id="metricCredits">25</b></strong><small>credits available</small></div>
+          <div class="metric"><span>SYSTEM</span><strong class="online">ONLINE</strong><small>All core services ready</small></div>
+        </div>
+
+        <div class="section-head"><div><span class="eyebrow">QUICK ACCESS</span><h2>Intelligence modules</h2></div><button class="text-btn" data-go="modules">View all →</button></div>
+        <div class="module-grid" id="quickModules"></div>
+
+        <div class="lower-grid">
+          <div class="panel">
+            <div class="panel-head"><div><span class="eyebrow">RECENT ACTIVITY</span><h3>Investigation history</h3></div><button class="text-btn" data-go="history">Open history</button></div>
+            <div id="recentList" class="activity-list"></div>
+          </div>
+          <div class="panel safety-panel">
+            <div class="shield">✓</div>
+            <span class="eyebrow">RESEARCH STANDARD</span>
+            <h3>Evidence first.</h3>
+            <p>NEXUS is designed for lawful, public-source research. Results should be verified against authoritative sources before being treated as evidence.</p>
+            <div class="tag-row"><span>PUBLIC SOURCES</span><span>VERIFIABLE</span><span>AUDITABLE</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="investigate" class="view">
+        <div class="page-title"><span class="eyebrow">INVESTIGATION CONSOLE</span><h1>Run an investigation</h1><p>Choose a supported public identifier and collect structured, server-persisted findings.</p></div>
+        <div class="investigation-layout">
+          <div class="panel search-panel">
+            <div class="target-tabs" id="targetTabs">
+              <button class="target-tab active" data-type="domain">◉ Domain</button>
+              <button class="target-tab" data-type="ip">◈ IP Address</button>
+              <button class="target-tab" data-type="username">◎ Username</button>
+              <button class="target-tab" data-type="email">✉ Email</button>
+              <button class="target-tab" data-type="url">↗ URL</button>
+            </div>
+            <label class="input-label" for="targetInput">TARGET IDENTIFIER</label>
+            <div class="search-box"><span>⌕</span><input id="targetInput" placeholder="example.com" autocomplete="off"><button id="runInvestigation">RUN SCAN <b>⚡ 1</b></button></div>
+            <div class="query-hints"><span>Examples:</span><button data-example="example.com">example.com</button><button data-example="8.8.8.8">8.8.8.8</button><button data-example="security">security</button></div>
+            <div class="notice">Public-source collection is subject to provider availability and terms. Verify important findings independently before relying on them.</div>
+          </div>
+          <div class="panel results-panel">
+            <div class="panel-head"><div><span class="eyebrow">RESULTS</span><h3 id="resultTitle">Awaiting target</h3></div><span id="resultBadge" class="badge">READY</span></div>
+            <div id="results" class="results-empty"><div class="empty-icon">⌕</div><strong>No investigation running</strong><p>Enter a target to generate a structured investigation report.</p></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="modules" class="view">
+        <div class="page-title"><span class="eyebrow">CAPABILITY MATRIX</span><h1>Intelligence modules</h1><p>Purpose-built modules for domain research, infrastructure analysis and digital verification.</p></div>
+        <div class="module-grid full" id="allModules"></div>
+      </div>
+
+      <div id="history" class="view">
+        <div class="page-title"><span class="eyebrow">AUDIT TRAIL</span><h1>Investigation history</h1><p>Server-persisted investigation history for your account and workspace.</p></div>
+        <div class="panel"><div id="historyList" class="history-table"></div></div>
+      </div>
+
+      <div id="cases" class="view">
+  <div class="page-title"><span class="eyebrow">CASE MANAGEMENT</span><h1>Investigation cases</h1><p>Server-persisted cases shared according to workspace permissions.</p></div>
+  <div class="case-toolbar"><button class="primary-btn" id="caseCreateFromView">+ New case</button><span class="case-count" id="serverCaseCount">0 cases</span></div>
+  <div class="case-grid" id="serverCaseGrid"><div class="panel empty-case"><strong>Loading cases…</strong></div></div>
+</div>
+<div id="reports" class="view">
+        <div class="page-title"><span class="eyebrow">CASE MANAGEMENT</span><h1>Reports</h1><p>Prepare structured investigation notes for review and export.</p></div>
+        <div class="report-grid">
+          <div class="panel report-card"><div class="report-icon">▤</div><h3>Investigation report</h3><p>Generate a report from your latest server-persisted investigation.</p><button class="primary-btn" id="generateReport">Generate report</button></div>
+          <div class="panel report-card"><div class="report-icon">✓</div><h3>Evidence checklist</h3><p>Record source URL, collection time, verification status and analyst notes.</p><button class="ghost-btn">Open checklist</button></div>
+        </div>
+      </div>
+
+      <div id="workspace" class="view">
+        <div class="page-title"><span class="eyebrow">TEAM WORKSPACE</span><h1>Workspace & Members</h1><p>Manage your analyst workspace and invite collaborators. Invitations use controlled tokens. Copy the token to the invited analyst through your approved communication channel.</p></div>
+        <div class="workspace-grid">
+          <div class="panel"><div class="panel-head"><div><span class="eyebrow">CURRENT WORKSPACE</span><h2 id="wsName">Loading…</h2><p id="wsMeta">—</p></div><button class="ghost-btn" id="wsRefresh">REFRESH</button></div><div id="wsMembers" class="member-list"></div></div>
+          <div class="panel"><div class="panel-head"><div><span class="eyebrow">INVITE ANALYST</span><h2>Invite member</h2></div></div><div class="invite-form"><div class="invite-accept"><input id="wsAcceptToken" class="auth-input" placeholder="Invitation token"><button class="ghost-btn" id="wsAcceptBtn">ACCEPT INVITE</button><p id="wsAcceptMsg" class="auth-message"></p></div><input id="wsInviteEmail" class="auth-input" type="email" placeholder="analyst@example.com"><select id="wsInviteRole" class="auth-input"><option value="member">Member</option><option value="analyst">Analyst</option><option value="viewer">Viewer</option></select><button class="primary-btn" id="wsInviteBtn">GENERATE INVITE</button><p id="wsInviteMsg" class="auth-message"></p></div><div id="wsInvites" class="invite-list"></div></div>
+        </div>
+      </div>
+
+      <div id="settings" class="view">
+        <div class="page-title"><span class="eyebrow">WORKSPACE CONFIGURATION</span><h1>Settings</h1><p>Account, plan, session and workspace controls.</p></div>
+        <div class="panel account-panel">
+          <div class="panel-head"><div><span class="eyebrow">ACCOUNT SECURITY</span><h2 id="accountName">Operator</h2><p id="accountMeta">Loading account…</p></div><button class="ghost-btn" id="logoutBtn">SIGN OUT</button></div>
+          <div class="account-grid">
+            <div><span class="eyebrow">PLAN</span><strong id="accountPlan">Free</strong><small id="accountQuota">Loading quota…</small></div>
+            <div><span class="eyebrow">ACTIVE SESSIONS</span><strong id="sessionCount">—</strong><small>Sessions expire automatically after 7 days.</small></div>
+            <div><span class="eyebrow">SECURITY</span><strong>PBKDF2</strong><small>Password hashing is upgraded on successful legacy login.</small></div>
+          </div>
+          <div class="settings-actions"><button class="ghost-btn" id="revokeSessionsBtn">REVOKE ALL OTHER SESSIONS</button><span id="securityMessage" class="auth-message"></span></div>
+        </div>
+        <div class="panel settings-list">
+          <div><div><strong>Public-source mode</strong><small>Investigations use approved public-source collectors.</small></div><span class="toggle on"></span></div>
+          <div><div><strong>Evidence reminders</strong><small>Show verification guidance before exporting reports.</small></div><span class="toggle on"></span></div>
+          <div><div><strong>Animations</strong><small>Reduce visual effects on low-end devices.</small></div><span class="toggle"></span></div>
+        </div>
+      </div>
+    </section>
+
+    <footer>© 2026 NEXUS // OSINT · Public-source research workspace · Use responsibly and lawfully.</footer>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

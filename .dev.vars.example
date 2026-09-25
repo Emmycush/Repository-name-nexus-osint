@@ -1,0 +1,3 @@
+# Local development only. Do not commit real secrets.
+APP_ENV=development
+DB_NAME=nexus-osint-db
