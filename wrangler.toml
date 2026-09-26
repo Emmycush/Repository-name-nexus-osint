@@ -6,5 +6,5 @@ pages_build_output_dir = "."
 [[d1_databases]]
 binding = "DB"
 database_name = "nexus-osint-db"
-database_id = "REPLACE_WITH_D1_DATABASE_ID"
+database_id = "dfce4cc3-77ce-4f12-a4bc-c393c1e9434f"
 migrations_dir = "migrations"
