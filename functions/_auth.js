@@ -1,7 +1,7 @@
 import {json} from "./_utils.js";
 
 const encoder=new TextEncoder();
-const PBKDF2_ITERATIONS=120000;
+const PBKDF2_ITERATIONS=100000;
 
 async function digestHex(data){
   const digest=await crypto.subtle.digest("SHA-256",data);
