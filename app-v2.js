@@ -356,20 +356,24 @@ loadInvestigations();
 
 const v6Run=document.querySelector("#v6Run");
 if(v6Run)v6Run.addEventListener("click",async()=>{
-  const out=document.querySelector("#v6Output"), target=document.querySelector("#v6Target").value.trim(), type=document.querySelector("#v6Type").value;
-  if(!target){out.textContent="Enter a target first.";return}
+  const out=document.querySelector("#v6Output");
+  const target=document.querySelector("#v6Target").value.trim();
+  const type=document.querySelector("#v6Type").value;
+
+  if(!target){
+    out.textContent="Enter a target first.";
+    return;
+  }
+
   out.textContent="Collecting public-source intelligence…";
+
   try{
-    try{
-      const testResponse=await fetch("/api/investigations",{method:"POST",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify({target,targetType:type})});
-      const testRaw=await testResponse.text();
-      out.textContent=`STATUS: ${testResponse.status}\nCONTENT-TYPE: ${testResponse.headers.get("content-type")}\n\n${testRaw.slice(0,1000)}`;
-      if(!testResponse.ok)return;
-    }catch(e){
-      out.textContent="FETCH ERROR: "+e.message;
-    }
+    const d=await runInvestigation(target,type);
+    out.textContent=JSON.stringify(d.investigation,null,2)+"\n\nREPORT: /api/report/"+d.investigation.id;
     await loadInvestigations();
-  }catch(e){out.textContent="ERROR: "+e.message;}
+  }catch(e){
+    out.textContent="ERROR: "+e.message;
+  }
 });
 
 // V7 operations center
