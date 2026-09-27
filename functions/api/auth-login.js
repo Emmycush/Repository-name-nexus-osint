@@ -10,12 +10,12 @@ export async function onRequestPost(context){
   const row=await context.env.DB.prepare("SELECT id,email,display_name,role,credits,password_hash,password_salt,COALESCE(password_algo,'legacy-sha256') password_algo,onboarding_complete FROM users WHERE email=?").bind(e).first();
   if(!row) return json({error:"Invalid email or password."},401);
   let supplied="";
-  if(row.password_algo==="pbkdf2-sha256-120000") supplied=await hashPassword(String(password||""),row.password_salt);
+  if(row.password_algo==="pbkdf2-sha256-100000") supplied=await hashPassword(String(password||""),row.password_salt);
   else supplied=await legacyHashPassword(String(password||""),row.password_salt);
   if(supplied!==row.password_hash) return json({error:"Invalid email or password."},401);
-  if(row.password_algo!=="pbkdf2-sha256-120000"){
+  if(row.password_algo!=="pbkdf2-sha256-100000"){
     const salt=randomSalt(), upgraded=await hashPassword(String(password||""),salt);
-    await context.env.DB.prepare("UPDATE users SET password_hash=?,password_salt=?,password_algo=? WHERE id=?").bind(upgraded,salt,"pbkdf2-sha256-120000",row.id).run();
+    await context.env.DB.prepare("UPDATE users SET password_hash=?,password_salt=?,password_algo=? WHERE id=?").bind(upgraded,salt,"pbkdf2-sha256-100000",row.id).run();
   }
   const token=sessionToken();
   await context.env.DB.prepare("INSERT INTO sessions(id,user_id,token_hash,expires_at,last_seen_at) VALUES(?,?,?,datetime('now','+7 days'),CURRENT_TIMESTAMP)").bind(crypto.randomUUID(),row.id,await sha256(token)).run();

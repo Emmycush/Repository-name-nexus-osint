@@ -17,7 +17,7 @@ export async function onRequestPost(context){
   const existing=await context.env.DB.prepare("SELECT id FROM users WHERE email=?").bind(e).first();
   if(existing) return json({error:"An account with that email already exists."},409);
   const id=crypto.randomUUID(), salt=randomSalt(), passwordHash=await hashPassword(p,salt);
-  await context.env.DB.prepare("INSERT INTO users(id,email,display_name,role,credits,password_hash,password_salt,password_algo) VALUES(?,?,?,?,25,?,?,?)").bind(id,e,n,"analyst",passwordHash,salt,"pbkdf2-sha256-120000").run();
+  await context.env.DB.prepare("INSERT INTO users(id,email,display_name,role,credits,password_hash,password_salt,password_algo) VALUES(?,?,?,?,25,?,?,?)").bind(id,e,n,"analyst",passwordHash,salt,"pbkdf2-sha256-100000").run();
   const workspaceId=crypto.randomUUID();
   const slugBase=(n.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,42)||'workspace');
   let workspaceSlug=slugBase;
