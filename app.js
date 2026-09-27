@@ -320,7 +320,10 @@ checkAuth();
 // V6 intelligence engine client
 async function runInvestigation(target,targetType,caseId=null){
   const r=await fetch("/api/investigations",{method:"POST",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify({target,targetType,caseId})});
-  const d=await r.json();
+  const raw=await r.text();
+  let d;
+  try{ d=JSON.parse(raw); }
+  catch{ throw new Error(`API returned non-JSON (${r.status}): ${raw.slice(0,200)}`); }
   if(!r.ok) throw new Error(d.error||"Investigation failed");
   if(d.credits!=null){
     state.credits=d.credits;
