@@ -14,9 +14,42 @@ async function collect(target,type){
     const findings=[];
     if(rdap.ok){const d=await rdap.json(); findings.push({id:id(),label:"RDAP domain",value:d.ldhName||domain,source:"RDAP",source_url:`https://rdap.org/domain/${encodeURIComponent(domain)}`}); if(d.events?.length)findings.push({id:id(),label:"RDAP events",value:JSON.stringify(d.events),source:"RDAP",source_url:`https://rdap.org/domain/${encodeURIComponent(domain)}`}); if(d.status?.length)findings.push({id:id(),label:"Domain status",value:d.status.join(", "),source:"RDAP",source_url:`https://rdap.org/domain/${encodeURIComponent(domain)}`});}
     if(dns.ok){const d=await dns.json(); for(const a of(d.Answer||[]))findings.push({id:id(),label:"A record",value:a.data,source:"Cloudflare DNS",source_url:`https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(domain)}&type=A`});}
-    return {normalized:domain,findings};
-  }
+   return {normalized:domain,findings};
   if(type==="ip"){
+    const ip=target.trim();
+    const r=await fetch(`https://free.freeipapi.com/api/v1/json/${encodeURIComponent(ip)}`);
+    if(!r.ok)throw new Error("IP provider request failed");
+    const d=await r.json();
+    if(!d.ipAddress)throw new Error("IP lookup returned no data");
+
+    const fields=[
+      ["IP","ipAddress"],
+      ["IP VERSION","ipVersion"],
+      ["CITY","cityName"],
+      ["REGION","regionName"],
+      ["COUNTRY","countryName"],
+      ["COUNTRY CODE","countryCode"],
+      ["CONTINENT","continent"],
+      ["ASN","asn"],
+      ["ORGANIZATION","asnOrganization"],
+      ["LATITUDE","latitude"],
+      ["LONGITUDE","longitude"],
+      ["ZIP CODE","zipCode"]
+    ];
+
+    return {
+      normalized:ip,
+      findings:fields
+        .filter(([,key])=>d[key]!==undefined&&d[key]!==null)
+        .map(([label,key])=>({
+          id:id(),
+          label,
+          value:String(d[key]),
+          source:"FreeIPAPI",
+          source_url:`https://free.freeipapi.com/api/v1/json/${encodeURIComponent(ip)}`
+        }))
+    };
+  }
     const ip=target.trim();
     const r=await fetch(`https://ipapi.co/${encodeURIComponent(ip)}/json/`);
     if(!r.ok)throw new Error("IP provider request failed");
