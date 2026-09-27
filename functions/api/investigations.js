@@ -17,7 +17,22 @@ async function collect(target,type){
     return {normalized:domain,findings};
   }
   if(type==="ip"){
-    const ip=target.trim(); const r=await fetch(`https://ipwho.is/${encodeURIComponent(ip)}`); if(!r.ok)throw new Error("IP provider request failed"); const d=await r.json(); const fields=["ip","type","continent","country","region","city","latitude","longitude","org","isp","asn"]; return {normalized:ip,findings:fields.filter(k=>d[k]!==undefined&&d[k]!==null).map(k=>({id:id(),label:k.toUpperCase(),value:String(d[k]),source:"ipwho.is",source_url:`https://ipwho.is/${encodeURIComponent(ip)}`}))};
+    const ip=target.trim();
+    const r=await fetch(`https://ipapi.co/${encodeURIComponent(ip)}/json/`);
+    if(!r.ok)throw new Error("IP provider request failed");
+    const d=await r.json();
+    if(d.error)throw new Error(d.reason||"IP lookup failed");
+    const fields=["ip","version","city","region","country_name","country_code","continent_code","postal","latitude","longitude","org","asn","timezone"];
+    return {
+      normalized:ip,
+      findings:fields.filter(k=>d[k]!==undefined&&d[k]!==null).map(k=>({
+        id:id(),
+        label:k.toUpperCase(),
+        value:String(d[k]),
+        source:"ipapi.co",
+        source_url:`https://ipapi.co/${encodeURIComponent(ip)}/json/`
+      }))
+    };
   }
   if(type==="url"){
     let u; try{u=new URL(target);}catch{throw new Error("Invalid URL");} return {normalized:u.href,findings:[{id:id(),label:"Protocol",value:u.protocol,source:"URL parser"},{id:id(),label:"Hostname",value:u.hostname,source:"URL parser"},{id:id(),label:"Port",value:u.port||"(default)",source:"URL parser"},{id:id(),label:"Path",value:u.pathname||"/",source:"URL parser"}]};
