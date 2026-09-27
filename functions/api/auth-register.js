@@ -31,6 +31,6 @@ export async function onRequestPost(context){
   await context.env.DB.prepare("INSERT INTO sessions(id,user_id,token_hash,expires_at,last_seen_at) VALUES(?,?,?,datetime('now','+7 days'),CURRENT_TIMESTAMP)").bind(crypto.randomUUID(),id,await sha256(token)).run();
   return new Response(JSON.stringify({user:{id,email:e,display_name:n,role:"analyst",credits:25,onboarding_complete:0}}),{status:201,headers:{"content-type":"application/json","set-cookie":setSessionCookie(token)}});
   } catch(error) {
-    return json({error:"Registration failed",detail:String(error?.message||error)},500);
+    return json({error:"Registration failed. Please try again."},500);
   }
 }
