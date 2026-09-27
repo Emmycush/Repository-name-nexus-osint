@@ -360,8 +360,14 @@ if(v6Run)v6Run.addEventListener("click",async()=>{
   if(!target){out.textContent="Enter a target first.";return}
   out.textContent="Collecting public-source intelligence…";
   try{
-    const d=await runInvestigation(target,type);
-    out.textContent=JSON.stringify(d.investigation,null,2)+"\n\nREPORT: /api/report/"+d.investigation.id;
+    try{
+      const testResponse=await fetch("/api/investigations",{method:"POST",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify({target,targetType:type})});
+      const testRaw=await testResponse.text();
+      out.textContent=`STATUS: ${testResponse.status}\nCONTENT-TYPE: ${testResponse.headers.get("content-type")}\n\n${testRaw.slice(0,1000)}`;
+      if(!testResponse.ok)return;
+    }catch(e){
+      out.textContent="FETCH ERROR: "+e.message;
+    }
     await loadInvestigations();
   }catch(e){out.textContent="ERROR: "+e.message;}
 });
