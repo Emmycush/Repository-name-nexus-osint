@@ -11,6 +11,8 @@ export async function onRequestPost(context){
   if(!validEmail(e)) return json({error:"Enter a valid email address."},400);
   if(p.length<12) return json({error:"Password must be at least 12 characters."},400);
   if(!context.env?.DB) return json({error:"Database is not configured."},503);
+
+  try {
   const gate=await loginRateLimit(context,`register:${e}`,5,3600); if(!gate.ok) return new Response(JSON.stringify({error:"Too many account attempts. Try again later."}),{status:429,headers:{"content-type":"application/json","retry-after":String(gate.retryAfter)}});
   const existing=await context.env.DB.prepare("SELECT id FROM users WHERE email=?").bind(e).first();
   if(existing) return json({error:"An account with that email already exists."},409);
@@ -28,4 +30,7 @@ export async function onRequestPost(context){
   const token=sessionToken();
   await context.env.DB.prepare("INSERT INTO sessions(id,user_id,token_hash,expires_at,last_seen_at) VALUES(?,?,?,datetime('now','+7 days'),CURRENT_TIMESTAMP)").bind(crypto.randomUUID(),id,await sha256(token)).run();
   return new Response(JSON.stringify({user:{id,email:e,display_name:n,role:"analyst",credits:25,onboarding_complete:0}}),{status:201,headers:{"content-type":"application/json","set-cookie":setSessionCookie(token)}});
+  } catch(error) {
+    return json({error:"Registration failed",detail:String(error?.message||error)},500);
+  }
 }
