@@ -1,6 +1,6 @@
-import {json} from "../_utils.js";
-import {requireUser} from "../_auth.js";
-import {getCaseAccess} from "../_workspace.js";
+import {json} from "../../_utils.js";
+import {requireUser} from "../../_auth.js";
+import {getCaseAccess} from "../../_workspace.js";
 
 export async function onRequestGet(context){
   const user=await requireUser(context); if(!user) return json({error:"Authentication required"},401);
