@@ -15,7 +15,7 @@ export async function onRequestGet(context){
 }
 
 export async function onRequestPatch(context){
-  const blocked=requireSameOrigin(context); if(blocked) return blocked;
+  const blocked=requireSameOrigin(context.request); if(blocked) return blocked;
   const user=await requireUser(context); if(!user) return json({error:"Authentication required"},401);
   if(!context.env?.DB) return json({error:"Database is not configured."},503);
   const id=context.params?.id;
