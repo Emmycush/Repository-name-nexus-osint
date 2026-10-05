@@ -356,11 +356,11 @@ loadInvestigations();
 
 const v6Run=document.querySelector("#v6Run");
 if(v6Run)v6Run.addEventListener("click",async()=>{
-  const out=document.querySelector("#v6Output"), target=document.querySelector("#v6Target").value.trim(), type=document.querySelector("#v6Type").value;
+  const out=document.querySelector("#v6Output"), target=document.querySelector("#v6Target").value.trim(), type=document.querySelector("#v6Type").value, caseId=document.querySelector("#v6CaseId").value.trim();
   if(!target){out.textContent="Enter a target first.";return}
   out.textContent="Collecting public-source intelligence…";
   try{
-    const d=await runInvestigation(target,type);
+    const d=await runInvestigation(target,type,caseId||null);
     out.textContent=JSON.stringify(d.investigation,null,2)+"\n\nREPORT: /api/report/"+d.investigation.id;
     await loadInvestigations();
   }catch(e){out.textContent="ERROR: "+e.message;}
