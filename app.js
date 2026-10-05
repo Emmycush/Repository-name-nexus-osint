@@ -319,7 +319,7 @@ checkAuth();
 
 // V6 intelligence engine client
 async function runInvestigation(target,targetType,caseId=null){
-  const r=await fetch("/api/investigations",{method:"POST",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify({target,targetType,caseId})});
+  alert("V6 caseId = ["+caseId+"]"); const r=await fetch("/api/investigations",{method:"POST",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify({target,targetType,caseId})});
   const raw=await r.text();
   let d;
   try{ d=JSON.parse(raw); }
