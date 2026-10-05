@@ -108,6 +108,19 @@
       <textarea id="v8Note" class="auth-input" rows="6" placeholder="Analyst note / reasoning / verification status"></textarea>
       <button class="primary-btn" id="v8SaveFinding">SAVE FINDING REVIEW</button>
       <p id="v8Message" class="auth-message"></p>
+
+      <h3 style="margin-top:24px">FINDING RELATIONSHIP</h3>
+      <label class="input-label">LINKED FINDING ID</label>
+      <input id="v8LinkedFindingId" class="auth-input" placeholder="Another finding ID">
+      <label class="input-label">RELATION</label>
+      <select id="v8Relation" class="auth-input">
+        <option value="related">Related</option>
+        <option value="supports">Supports</option>
+        <option value="contradicts">Contradicts</option>
+        <option value="derived-from">Derived from</option>
+      </select>
+      <button class="primary-btn" id="v8LinkFinding">LINK FINDINGS</button>
+      <p id="v8LinkMessage" class="auth-message"></p>
     </div>
   </div>
 </section>

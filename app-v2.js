@@ -423,7 +423,16 @@ async function loadEvidenceGraph(){
   try{
     const r=await fetch(`/api/evidence-graph/${encodeURIComponent(caseId)}`,{credentials:"include"});
     const d=await r.json(); if(!r.ok)throw new Error(d.error||"Could not load graph");
-    box.innerHTML=(d.nodes||[]).length?(d.nodes.map(n=>`<div class="evidence-item" data-finding="${n.id}"><strong>${String(n.label).replace(/[<>&"]/g,"")}</strong><p>${String(n.value).replace(/[<>&"]/g,"")}</p><p>${String(n.source||"")}</p><div class="confidence-bar"><div class="confidence-fill" style="width:${n.confidence||0}%"></div></div><p>Confidence ${n.confidence||0}% · ${n.id}</p></div>`).join("")):'<div class="timeline-empty">No findings in this case yet.</div>';
+    const nodes=d.nodes||[], links=d.links||[];
+    const clean=v=>String(v??"").replace(/[<>&"]/g,"");
+    const labels=new Map(nodes.map(n=>[n.id,clean(n.label)]));
+    const findings=nodes.length
+      ? nodes.map(n=>`<div class="evidence-item" data-finding="${clean(n.id)}"><strong>${clean(n.label)}</strong><p>${clean(n.value)}</p><p>${clean(n.source||"")}</p><div class="confidence-bar"><div class="confidence-fill" style="width:${n.confidence||0}%"></div></div><p>Confidence ${n.confidence||0}% · ${clean(n.id)}</p></div>`).join("")
+      : '<div class="timeline-empty">No findings in this case yet.</div>';
+    const relationships=links.length
+      ? `<div class="evidence-links"><h3>RELATIONSHIPS</h3>${links.map(l=>`<div class="evidence-link"><strong>${clean(labels.get(l.finding_id)||l.finding_id)}</strong><span> ${clean(l.relation)} → </span><strong>${clean(labels.get(l.linked_finding_id)||l.linked_finding_id)}</strong></div>`).join("")}</div>`
+      : "";
+    box.innerHTML=findings+relationships;
     box.querySelectorAll(".evidence-item").forEach(el=>el.addEventListener("click",()=>document.querySelector("#v8FindingId").value=el.dataset.finding));
   }catch(e){box.innerHTML=`<div class="timeline-empty">${e.message}</div>`}
 }
@@ -438,6 +447,26 @@ document.querySelector("#v8SaveFinding")?.addEventListener("click",async()=>{
     });
     const d=await r.json();if(!r.ok)throw new Error(d.error||"Save failed");
     msg.style.color="#7dffbf";msg.textContent="Finding review saved.";
+    loadEvidenceGraph();
+  }catch(e){msg.style.color="#ff7896";msg.textContent=e.message}
+});
+
+document.querySelector("#v8LinkFinding")?.addEventListener("click",async()=>{
+  const msg=document.querySelector("#v8LinkMessage");
+  try{
+    const findingId=document.querySelector("#v8FindingId").value.trim();
+    const linkedFindingId=document.querySelector("#v8LinkedFindingId").value.trim();
+    const relation=document.querySelector("#v8Relation").value;
+    if(!findingId||!linkedFindingId)throw new Error("Enter both finding IDs.");
+    if(findingId===linkedFindingId)throw new Error("A finding cannot be linked to itself.");
+
+    const r=await fetch("/api/finding-links",{
+      method:"POST",credentials:"include",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({findingId,linkedFindingId,relation})
+    });
+    const d=await r.json();if(!r.ok)throw new Error(d.error||"Could not link findings");
+    msg.style.color="#7dffbf";msg.textContent=`Findings linked as ${relation}.`;
+    document.querySelector("#v8LinkedFindingId").value="";
     loadEvidenceGraph();
   }catch(e){msg.style.color="#ff7896";msg.textContent=e.message}
 });
