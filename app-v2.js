@@ -490,7 +490,7 @@ document.querySelector("#v9Health")?.addEventListener("click",async()=>{
   try{
     const r=await fetch("/api/providers",{credentials:"include"}),d=await r.json();
     if(!r.ok)throw new Error(d.error||"Provider check failed");
-    box.innerHTML=(d.providers||[]).map(p=>`<div class="provider-card"><strong>${p.name}</strong><span class="${p.ok?"provider-ok":"provider-bad"}">${p.ok?"● ONLINE":"● DEGRADED"} · HTTP ${p.status}</span><span>${p.latencyMs} ms</span></div>`).join("");
+    box.innerHTML=(d.providers||[]).map(p=>{const state=p.ok?"ONLINE":(p.degraded?"DEGRADED":"OFFLINE");const cls=p.ok?"provider-ok":(p.degraded?"provider-degraded":"provider-bad");return `<div class="provider-card"><strong>${p.name}</strong><span class="${cls}">● ${state} · HTTP ${p.status}</span><span>${p.latencyMs} ms</span></div>`}).join("");
   }catch(e){box.innerHTML=`<div class="timeline-empty">${e.message}</div>`}
 });
 document.querySelector("#v9Normalize")?.addEventListener("click",async()=>{

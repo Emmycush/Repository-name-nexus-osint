@@ -21,7 +21,7 @@ export async function onRequestGet(context){
     const started=Date.now();
     try{
       const r=await fetch(url,{method:"HEAD",redirect:"manual"});
-      return {name,status:r.status,ok:r.status<500,latencyMs:Date.now()-started};
+      const status=r.status; const ok=status>=200&&status<300; const degraded=status>=300&&status<500; return {name,status,ok,degraded,latencyMs:Date.now()-started};
     }catch(e){return {name,status:0,ok:false,latencyMs:Date.now()-started,error:e.message||"request failed"}}
   }));
   return json({providers:results,checkedAt:new Date().toISOString()});
