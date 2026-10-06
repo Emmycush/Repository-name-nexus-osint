@@ -43,8 +43,25 @@ function renderActivity(){
     </div>`).join("");
 }
 function renderHistory(){
-  $("#historyList").innerHTML = `<div class="history-row head"><span>TARGET</span><span>MODULE</span><span>TIME</span><span>STATUS</span></div>` +
-    state.history.map(x => `<div class="history-row"><span>${x[0]}</span><span>${x[1]}</span><span>${x[2]}</span><span>${x[3]}</span></div>`).join("");
+  $("#historyList").innerHTML = `<div class="history-row head"><span>TARGET</span><span>MODULE</span><span>TIME</span><span>STATUS</span><span>REPORT</span></div>` +
+    state.history.map((x,i) => {
+      const inv = window.nexusInvestigations?.[i];
+      const id = inv?.id || "";
+      return `<div class="history-row">
+        <span>${x[0]}</span>
+        <span>${x[1]}</span>
+        <span>${x[2]}</span>
+        <span>${x[3]}</span>
+        <span>${id ? `<button class="ghost-btn history-report" data-report-id="${id}">VIEW REPORT</button>` : "—"}</span>
+      </div>`;
+    }).join("");
+
+  $$(".history-report").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const id = btn.dataset.reportId;
+      if(id) openInvestigationReport(id);
+    });
+  });
 }
 renderActivity(); renderHistory();
 
@@ -347,7 +364,7 @@ async function loadInvestigations(){
 }
 
 async function openInvestigationReport(id){
-  window.open(`/api/report/${encodeURIComponent(id)}`,"_blank","noopener,noreferrer");
+  window.open(`/api/report-advanced/${encodeURIComponent(id)}`,"_blank","noopener,noreferrer");
 }
 window.runInvestigation=runInvestigation;
 window.loadInvestigations=loadInvestigations;
