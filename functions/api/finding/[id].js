@@ -1,6 +1,6 @@
 
-import {json,body} from "../_utils.js";
-import {requireUser} from "../_auth.js";
+import {json,body} from "../../_utils.js";
+import {requireUser} from "../../_auth.js";
 
 export async function onRequestPatch(context){
   const user=await requireUser(context);
