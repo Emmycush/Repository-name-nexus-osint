@@ -341,3 +341,15 @@ export async function onRequestPost(context){
     credits:balance?.credits??0
   });
 }
+
+export async function onRequestGet(context){
+  const user=await requireUser(context);
+  if(!user) return json({error:"Authentication required"},401);
+  if(!context.env?.DB) return json({error:"Database is not configured."},503);
+
+  const rows=await context.env.DB.prepare(
+    "SELECT id,case_id,target,target_type,status,created_at FROM investigations WHERE user_id=? ORDER BY created_at DESC LIMIT 100"
+  ).bind(user.id).all();
+
+  return json({investigations:rows.results||[]});
+}
