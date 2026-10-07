@@ -1,4 +1,4 @@
-import {json,body} from "../_utils.js";
+import {json,body,cleanTarget,isDomain,isIPv4} from "../_utils.js";
 import {requireUser,requireSameOrigin} from "../_auth.js";
 import {rateLimit} from "../_rate.js";
 import {getCaseAccess,canWriteCase,deny} from "../_workspace.js";
@@ -246,11 +246,25 @@ export async function onRequestPost(context){
     return json({error:"Investigation rate limit exceeded. Try again shortly."},429);
 
   const {target,targetType,caseId}=await body(context.request);
-  const t=clean(target,300);
+  let t=cleanTarget(target);
   const type=clean(targetType,30).toLowerCase();
 
   if(!t||!["domain","ip","url","username","email"].includes(type))
     return json({error:"Supported types: domain, ip, url, username, email"},400);
+
+  if(type==="domain"){
+    const domain=t.replace(/^https?:\/\//i,"").split("/")[0].toLowerCase().replace(/\.$/,"");
+
+    if(!isDomain(domain))
+      return json({error:"Enter a valid domain, e.g. example.com"},400);
+
+    t=domain;
+  }
+
+  if(type==="ip"){
+    if(!isIPv4(t))
+      return json({error:"This module currently accepts IPv4 addresses only."},400);
+  }
 
   if(!context.env?.DB)
     return json({error:"Database is not configured."},503);
