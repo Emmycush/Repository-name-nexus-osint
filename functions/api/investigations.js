@@ -61,10 +61,22 @@ async function collect(target,type){
   if(type==="ip"){
     const ip=target.trim();
 
-    const r=await fetch(`https://ipwho.is/${encodeURIComponent(ip)}`);
-    if(!r.ok) throw new Error("IP provider request failed");
+    let r;
+    try{
+      r=await fetch(`https://ipwho.is/${encodeURIComponent(ip)}`);
+    }catch(e){
+      throw new Error(`IP provider fetch failed: ${e.message||"network error"}`);
+    }
 
-    const d=await r.json();
+    if(!r.ok)
+      throw new Error(`IP provider HTTP ${r.status}`);
+
+    let d;
+    try{
+      d=await r.json();
+    }catch{
+      throw new Error("IP provider returned invalid JSON");
+    }
     if(d.success===false)
       throw new Error(d.message||"IP lookup failed");
 
