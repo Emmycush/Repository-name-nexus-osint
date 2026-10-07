@@ -163,9 +163,16 @@ $("#runInvestigation").addEventListener("click",run);
 $("#targetInput").addEventListener("keydown",e=>{if(e.key==="Enter")run()});
 
 $("#generateReport").addEventListener("click",()=>{
-  const last=state.history[0];
-  if(!state.lastInvestigationId){ alert("Run an investigation first."); return; }
-  window.open(`/api/report-advanced/${encodeURIComponent(state.lastInvestigationId)}`,"_blank","noopener,noreferrer");
+  const latest = window.nexusInvestigations?.[0];
+  const id = state.lastInvestigationId || latest?.id;
+
+  if(!id){
+    alert("No server-persisted investigation found. Run an investigation first.");
+    return;
+  }
+
+  state.lastInvestigationId = id;
+  window.open(`/api/report-advanced/${encodeURIComponent(id)}`,"_blank","noopener,noreferrer");
 });
 
 
