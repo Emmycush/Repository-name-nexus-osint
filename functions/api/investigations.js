@@ -61,80 +61,33 @@ async function collect(target,type){
   if(type==="ip"){
     const ip=target.trim();
 
-    try{
-      const r=await fetch(`https://free.freeipapi.com/api/v1/json/${encodeURIComponent(ip)}`);
-
-      if(r.ok){
-        const d=await r.json();
-
-        if(d.ipAddress){
-          const fields=[
-            ["IP","ipAddress"],
-            ["IP VERSION","ipVersion"],
-            ["CITY","cityName"],
-            ["REGION","regionName"],
-            ["COUNTRY","countryName"],
-            ["COUNTRY CODE","countryCode"],
-            ["CONTINENT","continent"],
-            ["ASN","asn"],
-            ["ORGANIZATION","asnOrganization"],
-            ["LATITUDE","latitude"],
-            ["LONGITUDE","longitude"],
-            ["ZIP CODE","zipCode"]
-          ];
-
-          return {
-            normalized:ip,
-            findings:fields
-              .filter(([,key])=>d[key]!==undefined&&d[key]!==null)
-              .map(([label,key])=>({
-                id:id(),
-                label,
-                value:String(d[key]),
-                source:"FreeIPAPI",
-                source_url:`https://free.freeipapi.com/api/v1/json/${encodeURIComponent(ip)}`
-              }))
-          };
-        }
-      }
-    }catch{}
-
-    const r=await fetch(`https://ipapi.co/${encodeURIComponent(ip)}/json/`);
-
-    if(!r.ok)
-      throw new Error("IP provider request failed");
+    const r=await fetch(`https://ipwho.is/${encodeURIComponent(ip)}`);
+    if(!r.ok) throw new Error("IP provider request failed");
 
     const d=await r.json();
-
-    if(d.error)
-      throw new Error(d.reason||"IP lookup failed");
+    if(d.success===false)
+      throw new Error(d.message||"IP lookup failed");
 
     const fields=[
-      "ip",
-      "version",
-      "city",
-      "region",
-      "country_name",
-      "country_code",
-      "continent_code",
-      "postal",
-      "latitude",
-      "longitude",
-      "org",
-      "asn",
-      "timezone"
+      ["IP ADDRESS",d.ip],
+      ["COUNTRY",d.country],
+      ["REGION",d.region],
+      ["CITY",d.city],
+      ["ASN",d.connection?.asn],
+      ["ISP",d.connection?.isp],
+      ["ORGANIZATION",d.connection?.org]
     ];
 
     return {
       normalized:ip,
       findings:fields
-        .filter(k=>d[k]!==undefined&&d[k]!==null)
-        .map(k=>({
+        .filter(([,value])=>value!==undefined&&value!==null&&value!=="")
+        .map(([label,value])=>({
           id:id(),
-          label:k.toUpperCase(),
-          value:String(d[k]),
-          source:"ipapi.co",
-          source_url:`https://ipapi.co/${encodeURIComponent(ip)}/json/`
+          label,
+          value:String(value),
+          source:"ipwho.is",
+          source_url:`https://ipwho.is/${encodeURIComponent(ip)}`
         }))
     };
   }
